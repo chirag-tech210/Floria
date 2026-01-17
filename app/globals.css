@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 142 76% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 142 76% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 142 76% 20%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 84% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 142 30% 96%;
+    --muted-foreground: 142 20% 40%;
+    --accent: 142 50% 92%;
+    --accent-foreground: 142 76% 20%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 142 30% 85%;
+    --input: 142 30% 90%;
+    --ring: 142 76% 36%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 142 76% 8%;
+    --foreground: 142 30% 98%;
+    --card: 142 76% 10%;
+    --card-foreground: 142 30% 98%;
+    --popover: 142 76% 8%;
+    --popover-foreground: 142 30% 98%;
+    --primary: 142 76% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 70% 55%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 142 30% 20%;
+    --muted-foreground: 142 20% 70%;
+    --accent: 142 40% 25%;
+    --accent-foreground: 142 30% 98%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 142 30% 25%;
+    --input: 142 30% 25%;
+    --ring: 142 76% 50%;
+  }
+}
+
+@layer base {
+  body {
+    position: relative;
+    min-height: 100vh;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=1920&h=1080&fit=crop&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    opacity: 0.12;
+    z-index: -1;
+    filter: blur(3px) brightness(1.1) saturate(0.8);
+  }
+  
+  .dark body::before {
+    opacity: 0.06;
+    filter: blur(4px) brightness(0.4) saturate(0.6);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
