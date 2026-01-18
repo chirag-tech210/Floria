@@ -1,5 +1,6 @@
 'use server';
 
+import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 import Cart from '@/models/Cart';
 import Product from '@/models/Product';
@@ -19,10 +20,10 @@ export async function getCart() {
 
     await connectDB();
 
-    let cart = await Cart.findOne({ user: user.userId }).populate('items.product');
+    let cart = await Cart.findOne({ user: new mongoose.Types.ObjectId(user.userId) }).populate('items.product');
 
     if (!cart) {
-      cart = await Cart.create({ user: user.userId, items: [] });
+      cart = await Cart.create({ user: new mongoose.Types.ObjectId(user.userId), items: [] });
     }
 
     return {
@@ -68,10 +69,12 @@ export async function addToCart(productId: string, quantity: number = 1) {
 
     let cart = await Cart.findOne({ user: user.userId });
 
+    const productObjectId = new mongoose.Types.ObjectId(productId);
+
     if (!cart) {
       cart = await Cart.create({
-        user: user.userId,
-        items: [{ product: productId, quantity }],
+        user: new mongoose.Types.ObjectId(user.userId),
+        items: [{ product: productObjectId, quantity }],
       });
     } else {
       const existingItemIndex = cart.items.findIndex(
@@ -88,7 +91,7 @@ export async function addToCart(productId: string, quantity: number = 1) {
         }
         cart.items[existingItemIndex].quantity = newQuantity;
       } else {
-        cart.items.push({ product: productId, quantity });
+        cart.items.push({ product: productObjectId, quantity });
       }
 
       await cart.save();
@@ -140,7 +143,7 @@ export async function updateCartItem(productId: string, quantity: number) {
       };
     }
 
-    const cart = await Cart.findOne({ user: user.userId });
+    const cart = await Cart.findOne({ user: new mongoose.Types.ObjectId(user.userId) });
     if (!cart) {
       return {
         success: false,
@@ -189,7 +192,7 @@ export async function removeFromCart(productId: string) {
 
     await connectDB();
 
-    const cart = await Cart.findOne({ user: user.userId });
+    const cart = await Cart.findOne({ user: new mongoose.Types.ObjectId(user.userId) });
     if (!cart) {
       return {
         success: false,
@@ -230,7 +233,7 @@ export async function clearCart() {
 
     await connectDB();
 
-    const cart = await Cart.findOne({ user: user.userId });
+    const cart = await Cart.findOne({ user: new mongoose.Types.ObjectId(user.userId) });
     if (cart) {
       cart.items = [];
       await cart.save();

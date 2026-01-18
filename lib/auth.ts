@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
-const ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
-const REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+const ACCESS_SECRET: string = process.env.JWT_ACCESS_SECRET || '';
+const REFRESH_SECRET: string = process.env.JWT_REFRESH_SECRET || '';
+const ACCESS_EXPIRES_IN: string = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
+const REFRESH_EXPIRES_IN: string = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
 
 export interface JWTPayload {
   userId: string;
@@ -14,19 +14,28 @@ export interface JWTPayload {
 }
 
 export function generateAccessToken(payload: JWTPayload): string {
+  if (!ACCESS_SECRET) {
+    throw new Error('JWT_ACCESS_SECRET is not defined');
+  }
   return jwt.sign(payload, ACCESS_SECRET, {
     expiresIn: ACCESS_EXPIRES_IN,
-  });
+  } as jwt.SignOptions);
 }
 
 export function generateRefreshToken(payload: JWTPayload): string {
+  if (!REFRESH_SECRET) {
+    throw new Error('JWT_REFRESH_SECRET is not defined');
+  }
   return jwt.sign(payload, REFRESH_SECRET, {
     expiresIn: REFRESH_EXPIRES_IN,
-  });
+  } as jwt.SignOptions);
 }
 
 export function verifyAccessToken(token: string): JWTPayload | null {
   try {
+    if (!ACCESS_SECRET) {
+      return null;
+    }
     return jwt.verify(token, ACCESS_SECRET) as JWTPayload;
   } catch (error) {
     return null;
@@ -35,6 +44,9 @@ export function verifyAccessToken(token: string): JWTPayload | null {
 
 export function verifyRefreshToken(token: string): JWTPayload | null {
   try {
+    if (!REFRESH_SECRET) {
+      return null;
+    }
     return jwt.verify(token, REFRESH_SECRET) as JWTPayload;
   } catch (error) {
     return null;

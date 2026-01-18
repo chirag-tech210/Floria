@@ -1,5 +1,6 @@
 'use server';
 
+import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 import Order from '@/models/Order';
 import Cart from '@/models/Cart';
@@ -21,9 +22,9 @@ export async function getOrders() {
 
     await connectDB();
 
-    const query: any = { user: user.userId };
+    const query: any = { user: new mongoose.Types.ObjectId(user.userId) };
     if (user.role === 'ADMIN') {
-      delete query.user; // Admin can see all orders
+      delete query.user;
     }
 
     const orders = await Order.find(query)
@@ -58,7 +59,7 @@ export async function getOrderById(orderId: string) {
 
     const query: any = { _id: orderId };
     if (user.role !== 'ADMIN') {
-      query.user = user.userId;
+      query.user = new mongoose.Types.ObjectId(user.userId);
     }
 
     const order = await Order.findOne(query).populate('items.product');
@@ -97,7 +98,7 @@ export async function createOrder(formData: FormData) {
     await connectDB();
 
     // Get cart
-    const cart = await Cart.findOne({ user: user.userId }).populate('items.product');
+    const cart = await Cart.findOne({ user: new mongoose.Types.ObjectId(user.userId) }).populate('items.product');
     if (!cart || cart.items.length === 0) {
       return {
         success: false,
@@ -152,7 +153,7 @@ export async function createOrder(formData: FormData) {
 
     // Create order
     const order = await Order.create({
-      user: user.userId,
+      user: new mongoose.Types.ObjectId(user.userId),
       items: orderItems,
       total,
       paymentStatus,
