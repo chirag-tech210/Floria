@@ -2,13 +2,12 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getProducts, getCategories } from '@/app/actions/products';
-import { getCurrentUser } from '@/lib/auth';
 import ProductCard from '@/components/ProductCard';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, Filter, Flower2, Plus } from 'lucide-react';
+import { Search, Filter, Flower2 } from 'lucide-react';
 
 interface SearchParams {
   category?: string;
@@ -21,7 +20,6 @@ export default async function ProductsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const user = await getCurrentUser();
   const productsResult = await getProducts({
     category: params.category,
     search: params.search,
@@ -30,7 +28,6 @@ export default async function ProductsPage({
 
   const products = productsResult.data || [];
   const categories = categoriesResult.data || [];
-  const isAdmin = user?.role === 'ADMIN';
 
   if (!productsResult.success) {
     console.error('Products fetch error:', productsResult.message);
@@ -53,37 +50,17 @@ export default async function ProductsPage({
         </div>
         
         <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 backdrop-blur-md rounded-lg">
-                <Flower2 className="w-8 h-8 text-white" />
-              </div>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-2xl">
-                Our Flower Collection
-              </h1>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-white/20 backdrop-blur-md rounded-lg">
+              <Flower2 className="w-8 h-8 text-white" />
             </div>
-            {isAdmin && (
-              <Link href="/admin/products/new">
-                <Button className="bg-white text-green-700 hover:bg-green-50 font-semibold shadow-lg hidden md:flex">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Product
-                </Button>
-              </Link>
-            )}
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-2xl">
+              Our Flower Collection
+            </h1>
           </div>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl drop-shadow-lg">
             Discover our exquisite selection of fresh blooms, handpicked for their beauty and freshness
           </p>
-          {isAdmin && (
-            <div className="mt-4 md:hidden">
-              <Link href="/admin/products/new">
-                <Button className="bg-white text-green-700 hover:bg-green-50 font-semibold shadow-lg">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Product
-                </Button>
-              </Link>
-            </div>
-          )}
         </div>
       </section>
 
